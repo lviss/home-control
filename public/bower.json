@@ -1,0 +1,16 @@
+{
+  "name": "public",
+  "homepage": "https://github.com/lviss/home-control",
+  "description": "",
+  "main": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "socket.io-client": "^1.7.2"
+  }
+}

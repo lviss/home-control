@@ -1,0 +1,297 @@
+<!doctype html>
+<html ng-app="app" ng-controller="mainController" class="ng-cloak">
+  <head>
+    <title>Viss Home</title>
+    <style>
+      .ng-cloak { display: none; }
+      h1 { font-size: 9em; margin: 0.25em; }
+      .garage_container {
+        margin: 2em 10em;
+      }
+      .garage_door_icon {
+        background-color:rgb(63,81,181);
+        border-radius: 1em;
+        margin-right: 1em;
+        height:10em;
+        font-family: Roboto,"Helvetica Neue",sans-serif;
+        cursor:pointer;
+        color:white;
+        font-weight: 500;
+        text-transform: uppercase;
+        outline: 0;
+      }
+      .garage_door_icon:last-child { margin-right:0; }
+      .garage_door_icon.open {
+        background-color:white;
+        color:black;
+        border: 1em solid rgb(63,81,181);
+      }
+      .garage_door_icon:active:hover { background-color: #666; }
+      @media screen and (max-width: 992px) {
+        .garage_container { margin: 1em; }
+      }
+      /* make fan icons spin */
+      .fan-icon {
+        -webkit-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-animation: spinforever 1.1s infinite linear;
+        animation: spinforever 1.1s infinite linear;
+      }
+      @-webkit-keyframes spinforever {
+        0% {
+          -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+        }
+        100% {
+          -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes spinforever {
+        0% {
+          -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+        }
+        100% {
+          -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.1/angular-material.min.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta name="viewport" content="initial-scale=1" />
+    <meta name="mobile-web-app-capable" content="yes">
+  </head>
+  <body layout="column">
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <md-button class="md-icon-button" aria-label="Home" ng-disabled="true">
+          <md-icon>home</md-icon>
+        </md-button>
+        <h2>
+          <span>Viss Home Control</span>
+        </h2>
+      </div>
+    </md-toolbar>
+    <md-content md-scroll-y flex layout="column" layout-gt-sm="row">
+      <md-tabs md-align-tabs="top" flex md-swipe-content>
+        <md-tab label="Garage">
+          <div layout="row" class="garage_container">
+            <div 
+              flex="33" 
+              layout="row" 
+              layout-align="center center" 
+              ng-click="toggle_garage(2)" 
+              class="garage_door_icon" 
+              ng-class="{'open': garage_door2_state.open }">
+                {{ garage_door2_state.open ? 'Open' : 'Closed' }}
+            </div>
+            <div 
+              flex 
+              layout="row" 
+              layout-align="center center" 
+              ng-click="toggle_garage(1)" 
+              class="garage_door_icon" 
+              ng-class="{'open': garage_door1_state.open }">
+                {{ garage_door1_state.open ? 'Open' : 'Closed' }}
+            </div>
+          </div>
+        </md-tab>
+        <md-tab label="Thermostat">
+          <div layout="column" layout-align="center center" flex>
+            <div layout="row" layout-align="center center">
+              <h1>{{ thermostat_state.desired_temperature }}</h1>
+              <div layout="column">
+                <md-button class="md-icon-button" aria-label="Up" ng-click="thermostat_up()">
+                  <md-icon>keyboard_arrow_up</md-icon>
+                </md-button>
+                <md-button class="md-icon-button" aria-label="Down" ng-click="thermostat_down()">
+                  <md-icon>keyboard_arrow_down</md-icon>
+                </md-button>
+                <div layout="row" layout-align="center center">
+                  <small>{{ thermostat_state.actual_temperature }}</small>
+                </div>
+              </div>
+            </div>
+            <div layout="row" layout-align="center center">
+              <md-button ng-class="{'md-warn': thermostat_state.mode == 'heat'}" ng-click="thermostat_mode('heat')">Heat</md-button>
+              <md-button ng-class="{'md-primary': thermostat_state.mode == 'cool'}" ng-click="thermostat_mode('cool')">Cool</md-button>
+              <!--<md-button ng-class="{'md-primary': thermostat_state.mode == 'fan'}" ng-click="thermostat_mode('fan')">Fan</md-button>-->
+              <md-button ng-class="{'md-primary': thermostat_state.mode == 'off'}" ng-click="thermostat_mode('off')">Off</md-button>
+            </div>
+            <div layout="row" layout-align="center center">
+              <md-icon ng-show="thermostat_state.relays.heat">whatshot</md-icon>
+              <md-icon ng-show="thermostat_state.relays.cool">ac_unit</md-icon>
+              <!--<md-icon ng-show="thermostat_state.fan">toys</md-icon>-->
+            </div>
+          </div>
+        </md-tab>
+        <md-tab label="TV" style="position:relative;">
+          <div layout="column" layout-align="center center" flex>
+            <md-icon 
+              ng-class="{ 'md-primary': tv_receiver_power == 'on'}" 
+              style="font-size:256px;width:256px;height:256px;">tv</md-icon>
+            <div layout="row">
+              <md-button 
+                class="md-fab md-primary" 
+                ng-click="tv_receiver('toggle')">
+                <md-icon>power_settings_new</md-icon>
+              </md-button>
+              <md-button 
+                class="md-fab md-primary" 
+                ng-disabled="tv_receiver_power !== 'on'"
+                ng-click="tv_receiver('volume_down')">
+                <md-icon>volume_down</md-icon>
+              </md-button>
+              <md-button 
+                class="md-fab md-primary" 
+                ng-disabled="tv_receiver_power !== 'on'"
+                ng-click="tv_receiver('volume_up')">
+                <md-icon>volume_up</md-icon>
+              </md-button>
+            </div>
+            Volume: {{ tv_receiver_volume }}
+<!--            <md-button style="position:fixed;bottom:20px;left:20px" class="md-fab md-primary" ng-click="tv('on')"><md-icon>weekend</md-icon></md-button>
+            <md-button style="position:fixed;bottom:100px;left:20px" class="md-fab md-primary" ng-click="tv('off')"><md-icon>filter_hdr</md-icon></md-button>
+            <md-button style="position:fixed;bottom:180px;left:20px" class="md-fab md-primary" ng-click="tv('hdmi1')"><md-icon>computer</md-icon></md-button>
+            <md-button style="position:fixed;bottom:260px;left:20px" class="md-fab md-primary" ng-click="tv('hdmi2')"><md-icon>cast</md-icon></md-button>-->
+          </div>
+        </md-tab>
+        <md-tab label="Office TV" style="position:relative;">
+          <div layout="column" layout-align="center center" flex>
+            <md-icon class="md-primary" style="font-size:256px;width:256px;height:256px;">tv</md-icon>
+            <md-button class="md-fab md-primary" ng-click="officetv('on')">
+              <md-icon>power_settings_new</md-icon>
+            </md-button>
+          </div>
+        </md-tab>
+        <md-tab label="Lights & Fans" style="position:relative;">
+          <md-list ng-cloak>
+
+            <md-subheader>Fans</md-subheader>
+            <md-list-item ng-click="toggle('master_bedroom_fan')">
+              <p> Master Bedroom </p>
+              <md-icon class="md-primary fan-icon" ng-show="master_bedroom_fan == 'ON'">toys</md-icon>
+            </md-list-item>
+            <md-list-item ng-click="toggle('family_room_fan')">
+              <p> Family Room </p>
+              <md-icon class="md-primary fan-icon" ng-show="family_room_fan == 'ON'">toys</md-icon>
+            </md-list-item>
+
+            <md-divider></md-divider>
+            <md-subheader>Lights</md-subheader>
+            <md-list-item ng-click="toggle('garage_light')">
+              <p> Garage Light </p>
+              <md-icon class="md-primary" ng-show="garage_light == 'ON'">wb_incandescent</md-icon>
+            </md-list-item>
+            <md-list-item ng-click="toggle('driveway_lights')">
+              <p> Driveway Lights </p>
+              <md-icon class="md-primary" ng-show="driveway_lights == 'ON'">wb_incandescent</md-icon>
+            </md-list-item>
+
+          </md-list>
+        </md-tab>
+      </md-tabs>
+    </md-content>
+    <script src="/bower_components/socket.io-client/dist/socket.io.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.3/angular-material.min.js"></script>
+    <script>
+      var app = angular.module('app', ['ngMaterial']);
+      app.factory('socket', function ($rootScope) {
+        //var socket = io.connect('http://127.0.0.1:3000');
+        var socket = io.connect();
+        return {
+          on: function (eventName, callback) {
+            socket.on(eventName, function () {  
+              var args = arguments;
+              $rootScope.$apply(function () {
+                callback.apply(socket, args);
+              });
+            });
+          },
+          emit: function (eventName, data, callback) {
+            socket.emit(eventName, data, function () {
+              var args = arguments;
+              $rootScope.$apply(function () {
+                if (callback) {
+                  callback.apply(socket, args);
+                }
+              });
+            })
+          }
+        };
+      });
+      app.controller('mainController', function($scope, socket, $mdToast) {
+        $scope.connected = false;
+        var disconnected_toast = $mdToast.simple()
+              .textContent('Connecting...')
+              .hideDelay(0);
+        $mdToast.show(disconnected_toast);
+        socket.on('connect', function(){
+          $scope.connected = true;
+          $mdToast.hide(disconnected_toast);
+        });
+        var disconnect_handler = function(){$scope.connected = false;$mdToast.show(disconnected_toast);};
+        socket.on('disconnect', disconnect_handler);
+        socket.on('error', disconnect_handler);
+        socket.on('reconnect_error', disconnect_handler);
+        socket.on('reconnect_failed', disconnect_handler);
+        socket.on('devices/garage_door_sensor1', function(garage_door_state){
+          $scope.garage_door1_state = garage_door_state;
+        });
+        socket.on('devices/garage_door_sensor2', function(garage_door_state){
+          $scope.garage_door2_state = garage_door_state;
+        });
+        socket.on('devices/thermostat/get', function(thermostat_state){
+          $scope.thermostat_state = thermostat_state;
+        });
+        socket.on('devices/master_bedroom_fan', function(state){
+          $scope.master_bedroom_fan = state;
+        });
+        socket.on('devices/family_room_fan', function(state){
+          $scope.family_room_fan = state;
+        });
+        socket.on('devices/garage_light', function(state){
+          $scope.garage_light = state;
+        });
+        socket.on('devices/driveway_lights', function(state){
+          $scope.driveway_lights = state;
+        });
+        socket.on('devices/tv_receiver/power', function(state){
+          $scope.tv_receiver_power = state;
+        });
+        socket.on('devices/tv_receiver/volume', function(state){
+          $scope.tv_receiver_volume = state;
+        });
+        $scope.toggle_garage = function(door) { 
+          socket.emit('toggle door' + door);
+          var doors = { 1: "right", 2: "left" }
+          var toast = $mdToast.simple().textContent("Pressed button for the " + doors[door] + " door!");
+          $mdToast.show(toast);
+        };
+        $scope.tv = function(command) { socket.emit('tv', command);};
+        $scope.tv_receiver = function(command) { 
+          if (command == 'toggle')
+            socket.emit('devices/tv_receiver/command/power', $scope.tv_receiver_power == 'on' ? 'standby' : 'on');
+          if (command == 'volume_up')
+            socket.emit('devices/tv_receiver/command/volume', parseInt($scope.tv_receiver_volume) + 5);
+          if (command == 'volume_down')
+            socket.emit('devices/tv_receiver/command/volume', parseInt($scope.tv_receiver_volume) - 5);
+        };
+        $scope.officetv = function(command) { socket.emit('officetv', command);};
+        $scope.thermostat_up = function() { socket.emit('devices/thermostat/desired_temperature/inc');};
+        $scope.thermostat_down = function() { socket.emit('devices/thermostat/desired_temperature/dec');};
+        $scope.thermostat_mode = function(mode) { socket.emit('devices/thermostat/mode/set', mode);};
+        $scope.toggle = function(device) { socket.emit('devices/'+device);};
+      });
+    </script>
+  </body>
+</html>
