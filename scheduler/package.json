@@ -1,0 +1,15 @@
+{
+  "name": "scheduler",
+  "version": "1.0.0",
+  "description": "schedule arbitrary events to happen when specific mqtt messages are received",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mqtt": "^2.18.8"
+  }
+}
