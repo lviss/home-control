@@ -29,7 +29,7 @@ var garage_door_states = {
 };
 
 // an object to keep track of what we know about the thermostat
-var thermostat_state = {};
+var thermostat1_state = {};
 
 var mqtt = require('mqtt');
 var mqttclient = mqtt.connect(config.mqtt_server);
@@ -39,7 +39,7 @@ mqttclient.on('connect', function () {
   // about on the webpage.
   mqttclient.subscribe('devices/garage_door_sensor1');
   mqttclient.subscribe('devices/garage_door_sensor2');
-  mqttclient.subscribe('devices/thermostat/get');
+  mqttclient.subscribe('devices/thermostat1/get');
   mqttclient.subscribe('devices/master_bedroom_fan/stat/POWER');
   mqttclient.subscribe('devices/family_room_fan/stat/POWER');
   mqttclient.subscribe('devices/garage_light/stat/POWER');
@@ -68,9 +68,9 @@ mqttclient.on('message', function (topic, message) {
     garage_door_states.door2.open = data.open;
     garage_door_states.door2.unknown = false;
     io.emit(topic, garage_door_states.door2);
-  } else if (topic == 'devices/thermostat/get') {
-    thermostat_state = JSON.parse(message.toString());
-    io.emit(topic, thermostat_state);
+  } else if (topic == 'devices/thermostat1/get') {
+    thermostat1_state = JSON.parse(message.toString());
+    io.emit(topic, thermostat1_state);
   } else if (topic == 'devices/master_bedroom_fan/stat/POWER') {
     io.emit('devices/master_bedroom_fan', message.toString());
   } else if (topic == 'devices/family_room_fan/stat/POWER') {
@@ -113,7 +113,7 @@ io.on('connection', function(socket) {
     // to the web client as soon as it connects.
     socket.emit('devices/garage_door_sensor1', garage_door_states.door1);
     socket.emit('devices/garage_door_sensor2', garage_door_states.door2);
-    socket.emit('devices/thermostat/get', thermostat_state);
+    socket.emit('devices/thermostat1/get', thermostat1_state);
 
     // when we receive messages from socketio (the web client), we can generally pass them
     // straight through to MQTT. In some cases we'll have to do some translations.
@@ -140,14 +140,14 @@ io.on('connection', function(socket) {
     socket.on('officetv', function(command){
       mqttclient.publish('devices/office_tv_remote/command', command);
     });
-    socket.on('devices/thermostat/desired_temperature/inc', function() {
-      mqttclient.publish('devices/thermostat/desired_temperature/inc');
+    socket.on('devices/thermostat1/desired_temperature/inc', function() {
+      mqttclient.publish('devices/thermostat1/desired_temperature/inc');
     });
-    socket.on('devices/thermostat/desired_temperature/dec', function() {
-      mqttclient.publish('devices/thermostat/desired_temperature/dec', 'dec');
+    socket.on('devices/thermostat1/desired_temperature/dec', function() {
+      mqttclient.publish('devices/thermostat1/desired_temperature/dec', 'dec');
     });
-    socket.on('devices/thermostat/mode/set', function(mode) {
-      mqttclient.publish('devices/thermostat/mode/set', mode);
+    socket.on('devices/thermostat1/mode/set', function(mode) {
+      mqttclient.publish('devices/thermostat1/mode/set', mode);
     });
     socket.on('devices/master_bedroom_fan', function() {
       mqttclient.publish('devices/master_bedroom_fan/cmnd/Power1', 'TOGGLE');

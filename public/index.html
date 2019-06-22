@@ -103,29 +103,29 @@
         <md-tab label="Thermostat">
           <div layout="column" layout-align="center center" flex>
             <div layout="row" layout-align="center center">
-              <h1>{{ thermostat_state.desired_temperature }}</h1>
+              <h1>{{ thermostat1_state.desired_temperature }}</h1>
               <div layout="column">
-                <md-button class="md-icon-button" aria-label="Up" ng-click="thermostat_up()">
+                <md-button class="md-icon-button" aria-label="Up" ng-click="thermostat1_up()">
                   <md-icon>keyboard_arrow_up</md-icon>
                 </md-button>
-                <md-button class="md-icon-button" aria-label="Down" ng-click="thermostat_down()">
+                <md-button class="md-icon-button" aria-label="Down" ng-click="thermostat1_down()">
                   <md-icon>keyboard_arrow_down</md-icon>
                 </md-button>
                 <div layout="row" layout-align="center center">
-                  <small>{{ thermostat_state.actual_temperature }}</small>
+                  <small>{{ thermostat1_state.actual_temperature }}</small>
                 </div>
               </div>
             </div>
             <div layout="row" layout-align="center center">
-              <md-button ng-class="{'md-warn': thermostat_state.mode == 'heat'}" ng-click="thermostat_mode('heat')">Heat</md-button>
-              <md-button ng-class="{'md-primary': thermostat_state.mode == 'cool'}" ng-click="thermostat_mode('cool')">Cool</md-button>
-              <!--<md-button ng-class="{'md-primary': thermostat_state.mode == 'fan'}" ng-click="thermostat_mode('fan')">Fan</md-button>-->
-              <md-button ng-class="{'md-primary': thermostat_state.mode == 'off'}" ng-click="thermostat_mode('off')">Off</md-button>
+              <md-button ng-class="{'md-warn': thermostat1_state.mode == 'heat'}" ng-click="thermostat1_mode('heat')">Heat</md-button>
+              <md-button ng-class="{'md-primary': thermostat1_state.mode == 'cool'}" ng-click="thermostat1_mode('cool')">Cool</md-button>
+              <!--<md-button ng-class="{'md-primary': thermostat1_state.mode == 'fan'}" ng-click="thermostat1_mode('fan')">Fan</md-button>-->
+              <md-button ng-class="{'md-primary': thermostat1_state.mode == 'off'}" ng-click="thermostat1_mode('off')">Off</md-button>
             </div>
             <div layout="row" layout-align="center center">
-              <md-icon ng-show="thermostat_state.relays.heat">whatshot</md-icon>
-              <md-icon ng-show="thermostat_state.relays.cool">ac_unit</md-icon>
-              <!--<md-icon ng-show="thermostat_state.fan">toys</md-icon>-->
+              <md-icon ng-show="thermostat1_state.relays.heat">whatshot</md-icon>
+              <md-icon ng-show="thermostat1_state.relays.cool">ac_unit</md-icon>
+              <!--<md-icon ng-show="thermostat1_state.fan">toys</md-icon>-->
             </div>
           </div>
         </md-tab>
@@ -250,8 +250,8 @@
         socket.on('devices/garage_door_sensor2', function(garage_door_state){
           $scope.garage_door2_state = garage_door_state;
         });
-        socket.on('devices/thermostat/get', function(thermostat_state){
-          $scope.thermostat_state = thermostat_state;
+        socket.on('devices/thermostat1/get', function(thermostat1_state){
+          $scope.thermostat1_state = thermostat1_state;
         });
         socket.on('devices/master_bedroom_fan', function(state){
           $scope.master_bedroom_fan = state;
@@ -287,9 +287,9 @@
             socket.emit('devices/tv_receiver/command/volume', parseInt($scope.tv_receiver_volume) - 5);
         };
         $scope.officetv = function(command) { socket.emit('officetv', command);};
-        $scope.thermostat_up = function() { socket.emit('devices/thermostat/desired_temperature/inc');};
-        $scope.thermostat_down = function() { socket.emit('devices/thermostat/desired_temperature/dec');};
-        $scope.thermostat_mode = function(mode) { socket.emit('devices/thermostat/mode/set', mode);};
+        $scope.thermostat1_up = function() { socket.emit('devices/thermostat1/desired_temperature/inc');};
+        $scope.thermostat1_down = function() { socket.emit('devices/thermostat1/desired_temperature/dec');};
+        $scope.thermostat1_mode = function(mode) { socket.emit('devices/thermostat1/mode/set', mode);};
         $scope.toggle = function(device) { socket.emit('devices/'+device);};
       });
     </script>
