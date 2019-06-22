@@ -30,6 +30,10 @@
       @media screen and (max-width: 992px) {
         .garage_container { margin: 1em; }
       }
+      @media (orientation: landscape) {
+        body .rowWhenLandscape { flex-direction: row; }
+        body .columnWhenLandscape { flex-direction: column; }
+      }
       /* make fan icons spin */
       .fan-icon {
         -webkit-transform: translateZ(0);
@@ -101,7 +105,7 @@
           </div>
         </md-tab>
         <md-tab label="Thermostat">
-          <div layout="column" layout-align="center center" flex>
+          <div class="rowWhenLandscape" layout="column" layout-align="center center" flex>
             <div layout="row" layout-align="center center">
               <h1>{{ thermostat1_state.desired_temperature }}</h1>
               <div layout="column">
@@ -116,17 +120,17 @@
                 </div>
               </div>
             </div>
-            <div layout="row" layout-align="center center">
+            <div class="columnWhenLandscape" layout="row" layout-align="center center">
               <md-button ng-class="{'md-warn': thermostat1_state.mode == 'heat'}" ng-click="thermostat1_mode('heat')">Heat</md-button>
               <md-button ng-class="{'md-primary': thermostat1_state.mode == 'cool'}" ng-click="thermostat1_mode('cool')">Cool</md-button>
               <!--<md-button ng-class="{'md-primary': thermostat1_state.mode == 'fan'}" ng-click="thermostat1_mode('fan')">Fan</md-button>-->
               <md-button ng-class="{'md-primary': thermostat1_state.mode == 'off'}" ng-click="thermostat1_mode('off')">Off</md-button>
             </div>
-            <div layout="row" layout-align="center center">
-              <md-icon ng-show="thermostat1_state.relays.heat">whatshot</md-icon>
-              <md-icon ng-show="thermostat1_state.relays.cool">ac_unit</md-icon>
-              <!--<md-icon ng-show="thermostat1_state.fan">toys</md-icon>-->
-            </div>
+          </div>
+          <div layout="row" layout-align="center center">
+            <md-icon ng-show="thermostat1_state.relays.heat">whatshot</md-icon>
+            <md-icon ng-show="thermostat1_state.relays.cool">ac_unit</md-icon>
+            <!--<md-icon ng-show="thermostat1_state.fan">toys</md-icon>-->
           </div>
         </md-tab>
         <md-tab label="TV" style="position:relative;">
