@@ -1,0 +1,12 @@
+<ng-container *ngIf="(state$ | async) as state">
+	<mat-slider
+			[max]="99"
+			[min]="0"
+      thumbLabel="true"
+      (change)="onSlide($event)"
+			[value]="state">
+	</mat-slider>
+  <div class="display-value">
+    {{ state == 99 ? '&infin;' : state }}
+  </div>
+</ng-container>

@@ -1,0 +1,18 @@
+<ng-container *ngIf="(powerState$ | async) as powerState">
+  <div class="tv-icon"><mat-icon [color]="powerState == 'on' ? 'accent' : ''">tv</mat-icon></div>
+  <button 
+    mat-icon-button 
+    [color]="powerState == 'on' ? 'accent' : ''" 
+    (click)="power(powerState == 'on' ? 'standby' : 'on')">
+    <mat-icon>power_settings_new</mat-icon>
+  </button>
+  <ng-container *ngIf="(volumeState$ | async) as volumeState">
+    <button mat-icon-button (click)="setVolume(volumeState - 5)" [disabled]="powerState != 'on'">
+      <mat-icon>volume_down</mat-icon>
+    </button>
+    <button mat-icon-button (click)="setVolume(volumeState + 5)" [disabled]="powerState != 'on'">
+      <mat-icon>volume_up</mat-icon>
+    </button>
+    <div>Volume: {{ volumeState }}</div>
+  </ng-container>
+</ng-container>

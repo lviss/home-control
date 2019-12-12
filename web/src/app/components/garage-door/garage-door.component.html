@@ -1,0 +1,8 @@
+<ng-container *ngIf="(state$ | async) as state">
+  <div 
+    (click)="toggleGarage($event)" 
+    class="garage_door_icon" 
+    [ngClass]="{'open': state?.open }">
+      {{ garageLabel(state) }}
+  </div>
+</ng-container>

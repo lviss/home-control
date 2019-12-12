@@ -1,0 +1,29 @@
+@import "../../../variables.scss";
+
+.garage_door_icon {
+  width:100%;
+	background-color:$primary;
+	border-radius: 1em;
+	border: 1em solid $primary;
+	height:10em;
+	font-family: Roboto,"Helvetica Neue",sans-serif;
+	cursor:pointer;
+	color:white;
+	font-weight: 500;
+	text-transform: uppercase;
+	outline: 0;
+  padding: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 460px) {
+  .garage_door_icon {
+	  height:5em;
+  }
+}
+.garage_door_icon:last-child { margin-right:0; }
+.garage_door_icon.open {
+	background-color:inherit;
+}
+.garage_door_icon:active:hover { background-color: #666; }

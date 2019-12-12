@@ -1,0 +1,11 @@
+:host {
+  display: flex;
+  align-items: center;
+}
+mat-slider {
+  flex: 1;
+}
+.display-value {
+  width: 1em;
+  text-align: right;
+}

@@ -1,0 +1,11 @@
+//@import '../all-theme';
+@import 'variables.scss';
+
+
+// Include non-theme styles for core.
+@include mat-core();
+
+$theme: mat-dark-theme($primary-palette, $accent-palette);
+
+// Include all theme styles for the components.
+@include angular-material-theme($theme);

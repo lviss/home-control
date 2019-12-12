@@ -21,6 +21,7 @@ All the components can easily be brought up together using docker-compose:
     // update /notify_me/config.js
     // update /onkyo_control/config.js
     // update /scheduler/config.js
+    // update /web/src/environments/environment.prod.ts
     // update /docker-compose.yaml (especially ports and hostnames)
     docker-compose build
     docker-compose up -d

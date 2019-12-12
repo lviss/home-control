@@ -1,0 +1,6 @@
+<ng-container *ngIf="(state$ | async) as state">
+	<mat-slide-toggle
+      (change)="onChange($event)"
+			[checked]="state == 'ON'">
+	</mat-slide-toggle>
+</ng-container>

@@ -1,0 +1,11 @@
+// Import material theming functions
+@import '~@angular/material/theming';
+
+$primary-palette: mat-palette($mat-purple, 700, 500, 800);
+$accent-palette:  mat-palette($mat-green);
+$warn-palette:  mat-palette($mat-red);
+
+// Create your Sass color vars (will be available in all the project)
+$primary: mat-color($primary-palette);
+$accent: mat-color($accent-palette);
+$warn: mat-color($warn-palette);

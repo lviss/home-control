@@ -16,81 +16,36 @@ var io = require('socket.io')(http);
 var fs = require('fs');
 var config = require('./config.js');
 
-// an object to keep track of what we know about the garage door
-var garage_door_states = {
-  door1: {
-    open: false,
-    unknown: true
-  },
-  door2: {
-    open: false,
-    unknown: true
-  }
-};
-
-// an object to keep track of what we know about the thermostat
-var thermostat1_state = {};
-
 var mqtt = require('mqtt');
-var mqttclient = mqtt.connect(config.mqtt_server);
- 
-mqttclient.on('connect', function () {
-  // subscribe to all the devices that we want to show information
-  // about on the webpage.
-  mqttclient.subscribe('devices/garage_door_sensor1');
-  mqttclient.subscribe('devices/garage_door_sensor2');
-  mqttclient.subscribe('devices/thermostat1/get');
-  mqttclient.subscribe('devices/master_bedroom_fan/stat/POWER');
-  mqttclient.subscribe('devices/family_room_fan/stat/POWER');
-  mqttclient.subscribe('devices/garage_light/stat/POWER');
-  mqttclient.subscribe('devices/driveway_lights/stat/POWER');
-  mqttclient.subscribe('devices/tv_receiver/power');
-  mqttclient.subscribe('devices/tv_receiver/volume');
-  mqttclient.subscribe('devices/kitchen/lights/level');
-  mqttclient.subscribe('devices/upstairs_hallway/lights/level');
-})
- 
-mqttclient.on('message', function (topic, message) {
-  // generally when a message comes in from MQTT we can just
-  // rebroadcast it to socketio so the info can be shown on
-  // the browser. In some cases we'll want to process the data
-  // a little bit.
 
-  // TODO: this could probably be simplified
-
-  // message is a Buffer 
-  //console.log(message.toString());
-  if (topic == 'devices/garage_door_sensor1') {
-    var data = JSON.parse(message.toString());
-    garage_door_states.door1.open = data.open;
-    garage_door_states.door1.unknown = false;
-    io.emit(topic, garage_door_states.door1);
-  } else if (topic == 'devices/garage_door_sensor2') {
-    var data = JSON.parse(message.toString());
-    garage_door_states.door2.open = data.open;
-    garage_door_states.door2.unknown = false;
-    io.emit(topic, garage_door_states.door2);
-  } else if (topic == 'devices/thermostat1/get') {
-    thermostat1_state = JSON.parse(message.toString());
-    io.emit(topic, thermostat1_state);
-  } else if (topic == 'devices/master_bedroom_fan/stat/POWER') {
-    io.emit('devices/master_bedroom_fan', message.toString());
-  } else if (topic == 'devices/family_room_fan/stat/POWER') {
-    io.emit('devices/family_room_fan', message.toString());
-  } else if (topic == 'devices/garage_light/stat/POWER') {
-    io.emit('devices/garage_light', message.toString());
-  } else if (topic == 'devices/driveway_lights/stat/POWER') {
-    io.emit('devices/driveway_lights', message.toString());
-  } else if (topic == 'devices/tv_receiver/power') {
-    io.emit(topic, message.toString());
-  } else if (topic == 'devices/tv_receiver/volume') {
-    io.emit(topic, message.toString());
-  } else if (topic == 'devices/kitchen/lights/level') {
-    io.emit(topic, message.toString());
-  } else if (topic == 'devices/upstairs_hallway/lights/level') {
-    io.emit(topic, message.toString());
-  }
-});
+var inbound_topics = [
+  'devices/garage_door_sensor1',
+  'devices/garage_door_sensor2',
+  'devices/thermostat1/get',
+  'devices/master_bedroom_fan/stat/POWER',
+  'devices/family_room_fan/stat/POWER',
+  'devices/garage_light/stat/POWER',
+  'devices/driveway_lights/stat/POWER',
+  'devices/tv_receiver/power',
+  'devices/tv_receiver/volume',
+  'devices/kitchen/lights/level',
+  'devices/upstairs_hallway/lights/level'
+];
+ 
+var outbound_topics = [
+  'devices/upstairs_hallway/lights/level/set',
+  'devices/driveway_lights/cmnd/Power1',
+  'devices/master_bedroom_fan/cmnd/Power1',
+  'devices/family_room_fan/cmnd/Power1',
+  'devices/garage_light/cmnd/Power1',
+  'devices/garage_door_opener1/command',
+  'devices/garage_door_opener2/command',
+  'devices/tv_receiver/command/power',
+  'devices/tv_receiver/command/volume',
+  'devices/thermostat1/mode/set',
+  'devices/thermostat1/desired_temperature/inc',
+  'devices/thermostat1/desired_temperature/dec',
+];
 
 io.on('connection', function(socket) { 
   // whenever a web client connects, make sure they present a valid jwt token
@@ -105,6 +60,18 @@ io.on('connection', function(socket) {
 
     // we're authenticated.
 
+    // make a mqttclient for this socket
+    var mqttclient = mqtt.connect(config.mqtt_server);
+    mqttclient.on('connect', function () {
+      // subscribe to all the devices that we want to show information about
+      for (let i = 0; i < inbound_topics.length; i++)
+        mqttclient.subscribe(inbound_topics[i]);
+    })
+
+    mqttclient.on('message', function (topic, message) {
+      io.emit(topic, message.toString());
+    });
+
     // for devices that we aren't keeping track of their state, send a message
     // to the device via MQTT asking for their current state.
     mqttclient.publish('devices/tv_receiver/command/power', 'query');
@@ -115,70 +82,19 @@ io.on('connection', function(socket) {
     mqttclient.publish('devices/garage_light/cmnd/POWER');
     mqttclient.publish('devices/driveway_lights/cmnd/POWER');
 
-    // for devices that we ARE keeping track of the state, send the state
-    // to the web client as soon as it connects.
-    socket.emit('devices/garage_door_sensor1', garage_door_states.door1);
-    socket.emit('devices/garage_door_sensor2', garage_door_states.door2);
-    socket.emit('devices/thermostat1/get', thermostat1_state);
 
-    // when we receive messages from socketio (the web client), we can generally pass them
-    // straight through to MQTT. In some cases we'll have to do some translations.
-
-    // TODO: this could probably by simplified
-
+    // maybe we want to do something with the user object like pass it to the
+    // garage door?
     var user = decoded.user;
-    var open_garage_payload = {"action":"push_button", "user":user};
-    socket.on('toggle door1', function(){
-      mqttclient.publish('devices/garage_door_opener1/get', JSON.stringify(open_garage_payload));
-      io.emit('devices/garage_door_sensor1', garage_door_states.door1);
-    });
-    socket.on('toggle door2', function(){
-      mqttclient.publish('devices/garage_door_opener2/command', JSON.stringify(open_garage_payload));
-      io.emit('devices/garage_door_sensor2', garage_door_states.door2);
-    });
-    socket.on('tv', function(command){
-      mqttclient.publish('devices/tv/command', command);
-      if (command == 'on') // turn off stereo when turning off the tv, and turn it on with tv.
-        mqttclient.publish('cmnd/amp/power', '1');
-      else
-        mqttclient.publish('cmnd/amp/power', '0');
-    });
-    socket.on('officetv', function(command){
-      mqttclient.publish('devices/office_tv_remote/command', command);
-    });
-    socket.on('devices/thermostat1/desired_temperature/inc', function() {
-      mqttclient.publish('devices/thermostat1/desired_temperature/inc');
-    });
-    socket.on('devices/thermostat1/desired_temperature/dec', function() {
-      mqttclient.publish('devices/thermostat1/desired_temperature/dec', 'dec');
-    });
-    socket.on('devices/thermostat1/mode/set', function(mode) {
-      mqttclient.publish('devices/thermostat1/mode/set', mode);
-    });
-    socket.on('devices/master_bedroom_fan', function() {
-      mqttclient.publish('devices/master_bedroom_fan/cmnd/Power1', 'TOGGLE');
-    });
-    socket.on('devices/family_room_fan', function() {
-      mqttclient.publish('devices/family_room_fan/cmnd/Power1', 'TOGGLE');
-    });
-    socket.on('devices/garage_light', function() {
-      mqttclient.publish('devices/garage_light/cmnd/Power1', 'TOGGLE');
-    });
-    socket.on('devices/driveway_lights', function() {
-      mqttclient.publish('devices/driveway_lights/cmnd/Power1', 'TOGGLE');
-    });
-    socket.on('devices/tv_receiver/command/power', function(argument) {
-      mqttclient.publish('devices/tv_receiver/command/power', argument);
-    });
-    socket.on('devices/tv_receiver/command/volume', function(argument) {
-      mqttclient.publish('devices/tv_receiver/command/volume', argument + '');
-    });
-    socket.on('devices/kitchen/lights/level/set', function(argument) {
-      mqttclient.publish('devices/kitchen/lights/level/set', argument + '');
-    });
-    socket.on('devices/upstairs_hallway/lights/level/set', function(argument) {
-      mqttclient.publish('devices/upstairs_hallway/lights/level/set', argument + '');
-    });
+
+    for (let i = 0; i < outbound_topics.length; i++)
+      socket.on(outbound_topics[i], function(data) {
+        if (typeof(data) == "object") {
+          data.user = user;
+          data = JSON.stringify(data);
+        }
+        mqttclient.publish(outbound_topics[i], data + "");
+      });
   });
 });
 
@@ -223,6 +139,9 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
     }));
   }
 });
+
+// serve the manifest.webmanifest file without authentication
+app.use( "/manifest.webmanifest", express.static( __dirname + "/public/manifest.webmanifest" ) );
 
 // serve the static files from the public folder if we're authenticated
 app.use( "/", [ passport.authenticate('jwt', { session: false, failureRedirect: '/auth/google' }), express.static( __dirname + "/public" ) ] );

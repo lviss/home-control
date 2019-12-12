@@ -1,0 +1,53 @@
+<div class="mat-typography app-frame mat-app-background">
+  <mat-toolbar color="primary" class="main-toolbar mat-elevation-z6">
+    <mat-icon class="menu-icon">home</mat-icon>
+    <span class="title">Lane's House</span>
+    <span class="toolbar-spacer"></span>
+  </mat-toolbar>
+  <div class="page-container">
+    <div class="garage-doors">
+      <app-garage-door 
+        sensorName="garage_door_sensor2" 
+        openerName="garage_door_opener2">
+      </app-garage-door>
+      <app-garage-door 
+        sensorName="garage_door_sensor1" 
+        openerName="garage_door_opener1">
+      </app-garage-door>
+    </div>
+    <mat-divider></mat-divider>
+    <mat-list>
+      <h3 matSubheader>Lights</h3>
+      <mat-list-item>
+        <div class="label">Driveway</div>
+        <app-tasmota-switch deviceName="driveway_lights"></app-tasmota-switch> 
+      </mat-list-item>
+      <mat-list-item>
+        <div class="label">Garage</div>
+        <app-tasmota-switch deviceName="garage_light"></app-tasmota-switch> 
+      </mat-list-item>
+      <mat-list-item>
+        <div class="label">Upstairs Hallway</div>
+        <app-zwave-dimmer deviceName="upstairs_hallway/lights"></app-zwave-dimmer> 
+      </mat-list-item>
+      <mat-list-item>
+        <div class="label">Kitchen</div>
+        <app-zwave-dimmer deviceName="kitchen/lights"></app-zwave-dimmer>
+      </mat-list-item>
+      <mat-divider></mat-divider>
+      <h3 matSubheader>Fans</h3>
+      <mat-list-item>
+        <div class="label">Family Room</div>
+        <app-tasmota-switch deviceName="family_room_fan"></app-tasmota-switch> 
+      </mat-list-item>
+      <mat-list-item>
+        <div class="label">Master Bedroom</div>
+        <app-tasmota-switch deviceName="master_bedroom_fan"></app-tasmota-switch> 
+      </mat-list-item>
+    </mat-list>
+    <mat-divider></mat-divider>
+    <app-tv deviceName="tv_receiver"></app-tv>
+    <mat-divider></mat-divider>
+    <app-thermostat deviceName="thermostat1"></app-thermostat>
+  </div>
+</div>

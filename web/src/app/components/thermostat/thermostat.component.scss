@@ -1,0 +1,16 @@
+@import "../../../variables.scss";
+:host {
+  text-align: center;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+.desired-temperature {
+  font-size: 96px;
+  line-height: 96px;
+}
+.desired-temperature.heating {
+  color: $warn;
+}
+.desired-temperature.cooling {
+  color: $accent;
+}
