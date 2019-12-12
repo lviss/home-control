@@ -164,14 +164,14 @@
             <md-button style="position:fixed;bottom:260px;left:20px" class="md-fab md-primary" ng-click="tv('hdmi2')"><md-icon>cast</md-icon></md-button>-->
           </div>
         </md-tab>
-        <md-tab label="Office TV" style="position:relative;">
+        <!--<md-tab label="Office TV" style="position:relative;">
           <div layout="column" layout-align="center center" flex>
             <md-icon class="md-primary" style="font-size:256px;width:256px;height:256px;">tv</md-icon>
             <md-button class="md-fab md-primary" ng-click="officetv('on')">
               <md-icon>power_settings_new</md-icon>
             </md-button>
           </div>
-        </md-tab>
+        </md-tab>-->
         <md-tab label="Lights & Fans" style="position:relative;">
           <md-list ng-cloak>
 
@@ -194,6 +194,14 @@
             <md-list-item ng-click="toggle('driveway_lights')">
               <p> Driveway Lights </p>
               <md-icon class="md-primary" ng-show="driveway_lights == 'ON'">wb_incandescent</md-icon>
+            </md-list-item>
+            <md-list-item>
+              <p> Kitchen Lights </p>
+              <md-slider min="0" max="99" ng-model="kitchen_lights"></md-slider>
+            </md-list-item>
+            <md-list-item>
+              <p> Upstairs Hallway Lights </p>
+              <md-slider min="0" max="99" ng-model="upstairs_hallway_lights"></md-slider>
             </md-list-item>
 
           </md-list>
@@ -269,6 +277,14 @@
         socket.on('devices/driveway_lights', function(state){
           $scope.driveway_lights = state;
         });
+        socket.on('devices/kitchen/lights/level', function(state){
+          $scope.kitchen_lights = state;
+          $scope.skip_kitchen_lights = true;
+        });
+        socket.on('devices/upstairs_hallway/lights/level', function(state){
+          $scope.upstairs_hallway_lights = parseInt(state);
+          $scope.skip_upstairs_hallway_lights = true;
+        });
         socket.on('devices/tv_receiver/power', function(state){
           $scope.tv_receiver_power = state;
         });
@@ -295,6 +311,19 @@
         $scope.thermostat1_down = function() { socket.emit('devices/thermostat1/desired_temperature/dec');};
         $scope.thermostat1_mode = function(mode) { socket.emit('devices/thermostat1/mode/set', mode);};
         $scope.toggle = function(device) { socket.emit('devices/'+device);};
+        $scope.set = function(device, value) { socket.emit('devices/'+device+'/set', value);};
+        $scope.$watch('upstairs_hallway_lights', function(n, o) {
+          if (n != null && n != o && !$scope.skip_upstairs_hallway_lights) {
+            socket.emit('devices/upstairs_hallway/lights/level/set', n);
+          }
+          if ($scope.skip_upstairs_hallway_lights) $scope.skip_upstairs_hallway_lights = false;
+        });
+        $scope.$watch('kitchen_lights', function(n, o) {
+          if (n != null && n != o && !$scope.skip_kitchen_lights) {
+            socket.emit('devices/kitchen/lights/level/set', n);
+          }
+          if ($scope.skip_kitchen_lights) $scope.skip_kitchen_lights = false;
+        });
       });
     </script>
   </body>

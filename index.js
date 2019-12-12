@@ -46,6 +46,8 @@ mqttclient.on('connect', function () {
   mqttclient.subscribe('devices/driveway_lights/stat/POWER');
   mqttclient.subscribe('devices/tv_receiver/power');
   mqttclient.subscribe('devices/tv_receiver/volume');
+  mqttclient.subscribe('devices/kitchen/lights/level');
+  mqttclient.subscribe('devices/upstairs_hallway/lights/level');
 })
  
 mqttclient.on('message', function (topic, message) {
@@ -82,6 +84,10 @@ mqttclient.on('message', function (topic, message) {
   } else if (topic == 'devices/tv_receiver/power') {
     io.emit(topic, message.toString());
   } else if (topic == 'devices/tv_receiver/volume') {
+    io.emit(topic, message.toString());
+  } else if (topic == 'devices/kitchen/lights/level') {
+    io.emit(topic, message.toString());
+  } else if (topic == 'devices/upstairs_hallway/lights/level') {
     io.emit(topic, message.toString());
   }
 });
@@ -166,6 +172,12 @@ io.on('connection', function(socket) {
     });
     socket.on('devices/tv_receiver/command/volume', function(argument) {
       mqttclient.publish('devices/tv_receiver/command/volume', argument + '');
+    });
+    socket.on('devices/kitchen/lights/level/set', function(argument) {
+      mqttclient.publish('devices/kitchen/lights/level/set', argument + '');
+    });
+    socket.on('devices/upstairs_hallway/lights/level/set', function(argument) {
+      mqttclient.publish('devices/upstairs_hallway/lights/level/set', argument + '');
     });
   });
 });
