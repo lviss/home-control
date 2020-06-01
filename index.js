@@ -26,15 +26,26 @@ var inbound_topics = [
   'devices/family_room_fan/stat/POWER',
   'devices/garage_light/stat/POWER',
   'devices/driveway_lights/stat/POWER',
+  'devices/christmas_lights/stat/POWER',
+  'devices/christmas_tree/stat/POWER',
   'devices/tv_receiver/power',
   'devices/tv_receiver/volume',
-  'devices/kitchen/lights/level',
+  'devices/kitchen/lights4/level',
+  'devices/kitchen/lights3/level',
+  'devices/family_room/fanlight/level',
+  'devices/master_bedroom/light/level',
   'devices/upstairs_hallway/lights/level'
 ];
  
 var outbound_topics = [
   'devices/upstairs_hallway/lights/level/set',
+  'devices/kitchen/lights3/level/set',
+  'devices/kitchen/lights4/level/set',
+  'devices/family_room/fanlight/level/set',
+  'devices/master_bedroom/light/level/set',
   'devices/driveway_lights/cmnd/Power1',
+  'devices/christmas_lights/cmnd/Power1',
+  'devices/christmas_tree/cmnd/Power1',
   'devices/master_bedroom_fan/cmnd/Power1',
   'devices/family_room_fan/cmnd/Power1',
   'devices/garage_light/cmnd/Power1',
@@ -50,13 +61,13 @@ var outbound_topics = [
 io.on('connection', function(socket) { 
   // whenever a web client connects, make sure they present a valid jwt token
   if (!socket.handshake.headers.cookie) 
-    return socket.disconnect(); // not authenticated
+    return socket.disconnect(true); // not authenticated
   var token = cookieparser.parse(socket.handshake.headers.cookie).jwt;
   if(!token) 
-    return socket.disconnect(); // not authenticated
+    return socket.disconnect(true); // not authenticated
   jwt.verify(token, opts.secretOrKey, function(err, decoded) {
     if (err) 
-      return socket.disconnect(); // not authenticated
+      return socket.disconnect(true); // not authenticated
 
     // we're authenticated.
 
@@ -81,6 +92,8 @@ io.on('connection', function(socket) {
     mqttclient.publish('devices/family_room_fan/cmnd/POWER');
     mqttclient.publish('devices/garage_light/cmnd/POWER');
     mqttclient.publish('devices/driveway_lights/cmnd/POWER');
+    mqttclient.publish('devices/christmas_lights/cmnd/POWER');
+    mqttclient.publish('devices/christmas_tree/cmnd/POWER');
 
 
     // maybe we want to do something with the user object like pass it to the
@@ -140,8 +153,10 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
   }
 });
 
-// serve the manifest.webmanifest file without authentication
+// serve these files without authentication
 app.use( "/manifest.webmanifest", express.static( __dirname + "/public/manifest.webmanifest" ) );
+app.use( "/ngsw.json", express.static( __dirname + "/public/ngsw.json" ) );
+app.use( "/index.html", express.static( __dirname + "/public/index.html" ) );
 
 // serve the static files from the public folder if we're authenticated
 app.use( "/", [ passport.authenticate('jwt', { session: false, failureRedirect: '/auth/google' }), express.static( __dirname + "/public" ) ] );
