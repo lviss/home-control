@@ -58,57 +58,60 @@ var outbound_topics = [
   'devices/thermostat1/desired_temperature/dec',
 ];
 
-io.on('connection', function(socket) { 
+// require sockets to authenticate
+io.use((socket, next) => {
   // whenever a web client connects, make sure they present a valid jwt token
   if (!socket.handshake.headers.cookie) 
-    return socket.disconnect(true); // not authenticated
+    return next(new Error('Authentication error'));
   var token = cookieparser.parse(socket.handshake.headers.cookie).jwt;
   if(!token) 
-    return socket.disconnect(true); // not authenticated
+    return next(new Error('Authentication error'));
   jwt.verify(token, opts.secretOrKey, function(err, decoded) {
     if (err) 
-      return socket.disconnect(true); // not authenticated
-
-    // we're authenticated.
-
-    // make a mqttclient for this socket
-    var mqttclient = mqtt.connect(config.mqtt_server);
-    mqttclient.on('connect', function () {
-      // subscribe to all the devices that we want to show information about
-      for (let i = 0; i < inbound_topics.length; i++)
-        mqttclient.subscribe(inbound_topics[i]);
-    })
-
-    mqttclient.on('message', function (topic, message) {
-      io.emit(topic, message.toString());
-    });
-
-    // for devices that we aren't keeping track of their state, send a message
-    // to the device via MQTT asking for their current state.
-    mqttclient.publish('devices/tv_receiver/command/power', 'query');
-    mqttclient.publish('devices/tv_receiver/command/volume', 'query');
-    // publishing with no payload means query for the following devices
-    mqttclient.publish('devices/master_bedroom_fan/cmnd/POWER'); 
-    mqttclient.publish('devices/family_room_fan/cmnd/POWER');
-    mqttclient.publish('devices/garage_light/cmnd/POWER');
-    mqttclient.publish('devices/driveway_lights/cmnd/POWER');
-    mqttclient.publish('devices/christmas_lights/cmnd/POWER');
-    mqttclient.publish('devices/christmas_tree/cmnd/POWER');
-
-
-    // maybe we want to do something with the user object like pass it to the
-    // garage door?
-    var user = decoded.user;
-
-    for (let i = 0; i < outbound_topics.length; i++)
-      socket.on(outbound_topics[i], function(data) {
-        if (typeof(data) == "object") {
-          data.user = user;
-          data = JSON.stringify(data);
-        }
-        mqttclient.publish(outbound_topics[i], data + "");
-      });
+      return next(new Error('Authentication error'));
+    socket.decoded = decoded;
+    next();
   });
+});
+
+io.on('connection', function(socket) { 
+  // make a mqttclient for this socket
+  var mqttclient = mqtt.connect(config.mqtt_server);
+  mqttclient.on('connect', function () {
+    // subscribe to all the devices that we want to show information about
+    for (let i = 0; i < inbound_topics.length; i++)
+      mqttclient.subscribe(inbound_topics[i]);
+  })
+
+  mqttclient.on('message', function (topic, message) {
+    io.emit(topic, message.toString());
+  });
+
+  // for devices that we aren't keeping track of their state, send a message
+  // to the device via MQTT asking for their current state.
+  mqttclient.publish('devices/tv_receiver/command/power', 'query');
+  mqttclient.publish('devices/tv_receiver/command/volume', 'query');
+  // publishing with no payload means query for the following devices
+  mqttclient.publish('devices/master_bedroom_fan/cmnd/POWER'); 
+  mqttclient.publish('devices/family_room_fan/cmnd/POWER');
+  mqttclient.publish('devices/garage_light/cmnd/POWER');
+  mqttclient.publish('devices/driveway_lights/cmnd/POWER');
+  mqttclient.publish('devices/christmas_lights/cmnd/POWER');
+  mqttclient.publish('devices/christmas_tree/cmnd/POWER');
+
+
+  // maybe we want to do something with the user object like pass it to the
+  // garage door?
+  var user = socket.decoded.user;
+
+  for (let i = 0; i < outbound_topics.length; i++)
+    socket.on(outbound_topics[i], function(data) {
+      if (typeof(data) == "object") {
+        data.user = user;
+        data = JSON.stringify(data);
+      }
+      mqttclient.publish(outbound_topics[i], data + "");
+    });
 });
 
 // set up our authentication methods (google and jwt).
