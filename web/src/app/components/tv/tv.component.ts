@@ -14,12 +14,14 @@ export class TvComponent implements OnInit {
   commandTopic: string;
   powerState$;
   volumeState$;
+  inputState$;
   constructor(private socket: Socket) { }
 
   ngOnInit() {
     this.deviceTopic = 'devices/' + this.deviceName;
     this.commandTopic = 'devices/' + this.deviceName + '/command';
     this.powerState$ = this.socket.fromEvent(this.deviceTopic + '/power');
+    this.inputState$ = this.socket.fromEvent(this.deviceTopic + '/input');
     this.volumeState$ = this.socket.fromEvent(this.deviceTopic + '/volume')
       .pipe(map( (data:string) => parseInt(data) ));
   }
@@ -29,5 +31,8 @@ export class TvComponent implements OnInit {
   }
   power(value) {
     this.socket.emit(this.commandTopic + '/power', value); 
+  }
+  setInput(input) {
+    this.socket.emit(this.commandTopic + '/input', input); 
   }
 }

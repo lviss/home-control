@@ -30,6 +30,7 @@ var inbound_topics = [
   'devices/christmas_tree/stat/POWER',
   'devices/tv_receiver/power',
   'devices/tv_receiver/volume',
+  'devices/tv_receiver/input',
   'devices/kitchen/lights4/level',
   'devices/kitchen/lights3/level',
   'devices/family_room/fanlight/level',
@@ -53,6 +54,7 @@ var outbound_topics = [
   'devices/garage_door_opener2/command',
   'devices/tv_receiver/command/power',
   'devices/tv_receiver/command/volume',
+  'devices/tv_receiver/command/input',
   'devices/thermostat1/mode/set',
   'devices/thermostat1/desired_temperature/inc',
   'devices/thermostat1/desired_temperature/dec',
@@ -91,6 +93,7 @@ io.on('connection', function(socket) {
   // to the device via MQTT asking for their current state.
   mqttclient.publish('devices/tv_receiver/command/power', 'query');
   mqttclient.publish('devices/tv_receiver/command/volume', 'query');
+  mqttclient.publish('devices/tv_receiver/command/input', 'query');
   // publishing with no payload means query for the following devices
   mqttclient.publish('devices/master_bedroom_fan/cmnd/POWER'); 
   mqttclient.publish('devices/family_room_fan/cmnd/POWER');

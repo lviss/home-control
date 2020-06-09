@@ -13,6 +13,12 @@
     <button mat-icon-button (click)="setVolume(volumeState + 5)" [disabled]="powerState != 'on'">
       <mat-icon>volume_up</mat-icon>
     </button>
+    <button mat-icon-button (click)="setInput('game')" [disabled]="powerState != 'on'" [color]="(inputState$ | async) == 'game' ? 'accent' : ''">
+      <mat-icon>games</mat-icon>
+    </button>
+    <button mat-icon-button (click)="setInput('pc')" [disabled]="powerState != 'on'" [color]="(inputState$ | async) == 'pc' ? 'accent' : ''">
+      <mat-icon>cast</mat-icon>
+    </button>
     <div>Volume: {{ volumeState }}</div>
   </ng-container>
 </ng-container>
