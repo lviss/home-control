@@ -37,8 +37,14 @@ mqttclient.on('message', function (topic, message) {
 tvreceiver.on('data', function(result) {
   if (result.command == 'system-power')
     mqttclient.publish(mqtt_topic_root + '/power', result.argument);
-  if (result.command == 'input-selector')
-    mqttclient.publish(mqtt_topic_root + '/input', result.argument.includes('game') ? 'game' : 'pc');
+  if (result.command == 'input-selector') {
+    if (Array.isArray(result.argument))
+      mqttclient.publish(mqtt_topic_root + '/input', result.argument.includes('game') ? 'game' : 'pc');
+    else {
+      console.log('not an array as expected: ');
+      console.log(result.argument);
+    }
+  }
   if (Array.isArray(result.command) && result.command.includes('master-volume'))
     mqttclient.publish(mqtt_topic_root + '/volume', result.argument + "");
 });
