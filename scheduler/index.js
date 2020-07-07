@@ -3,7 +3,7 @@ let config = require('./config');
 var mqtt = require('mqtt');
 var mqttclient  = mqtt.connect(config.mqtt_server);
 
-let timers = [];
+let timers = {};
 
 mqttclient.on('connect', function () {
   mqttclient.subscribe('devices/garage_door_sensor2');
@@ -21,10 +21,11 @@ mqttclient.on('message', function (topic, message) {
   } else {
     // clear the timer
     clearTimeout(timers[topic]);
+    console.log('detected door closing, cancelling timer...');
   }
 });
 
 function notify_me() {
-  let message = `<b>Warning:</b> The garage has been open for 10 minutes.`;
+  let message = `Warning: The garage has been open for 10 minutes.`;
   mqttclient.publish('notify/me', JSON.stringify({ message: message }));
 }
