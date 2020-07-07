@@ -34,6 +34,7 @@ var inbound_topics = [
   'devices/kitchen/lights4/level',
   'devices/kitchen/lights3/level',
   'devices/family_room/fanlight/level',
+  'devices/family_room/can_lights/level',
   'devices/master_bedroom/light/level',
   'devices/upstairs_hallway/lights/level'
 ];
@@ -43,6 +44,7 @@ var outbound_topics = [
   'devices/kitchen/lights3/level/set',
   'devices/kitchen/lights4/level/set',
   'devices/family_room/fanlight/level/set',
+  'devices/family_room/can_lights/level/set',
   'devices/master_bedroom/light/level/set',
   'devices/driveway_lights/cmnd/Power1',
   'devices/christmas_lights/cmnd/Power1',
