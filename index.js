@@ -78,6 +78,8 @@ io.use((socket, next) => {
   });
 });
 
+// TODO: close mqttclient when io disconnects, or have all
+// io connections share an mqttclient.
 io.on('connection', function(socket) { 
   // make a mqttclient for this socket
   var mqttclient = mqtt.connect(config.mqtt_server);
@@ -147,10 +149,7 @@ app.get('/auth/google', passport.authenticate('google', { scope: ['profile'], se
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/auth/google', session: false }), function(req, res) {
   if (config.allowed_user_ids.indexOf(req.user.id) != -1) { // if this user is whitelisted in the config
     // Successful authentication, redirect home.
-    var token = jwt.sign({ user: { name: req.user.displayName, id: req.user.id, photos: req.user.photos }}, opts.secretOrKey, {
-      expiresIn: 604800 // 1 week in seconds
-    });
-    res.cookie('jwt', token, { maxAge: 604800000, httpOnly: true });
+    assignTokens(req.user, res);
     res.redirect('/');
   } else {
     // not in our allowed list
@@ -159,6 +158,15 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
       message: 'unauthorized access from: ' + JSON.stringify(req.user)
     }));
   }
+});
+
+app.use('/auth/refresh', function(req, res) {
+  // get refresh token
+  jwt.verify(req.cookies.refresh, opts.secretOrKey, function(err, decoded) {
+    if (err) return res.next('bad token');
+    assignTokens(decoded.user, res);
+    res.json({ result: 'success' });
+  });
 });
 
 // serve these files without authentication
@@ -171,3 +179,16 @@ app.use( "/", [ passport.authenticate('jwt', { session: false, failureRedirect: 
 
 http.listen(config.web_port);
 console.log('listening.');
+
+function assignTokens(user, res) {
+  var token_validity = 60 * 60; // one hour in seconds
+  var token = jwt.sign({ user: { name: user.displayName, id: user.id, photos: user.photos }}, opts.secretOrKey, {
+    expiresIn: token_validity // in seconds
+  });
+  res.cookie('jwt', token, { maxAge: token_validity * 1000, httpOnly: true, secure: true }); // maxAge in milliseconds
+  var refresh_token_validity = 60 * 60 * 24 * 90; // 90 days in seconds
+  var refresh_token = jwt.sign({ user: { name: user.displayName, id: user.id, photos: user.photos }, type: "refresh"}, opts.secretOrKey, {
+    expiresIn: refresh_token_validity // in seconds
+  });
+  res.cookie('refresh', refresh_token, { maxAge: refresh_token_validity * 1000, httpOnly: true, secure: true }); // maxAge in milliseconds
+}
