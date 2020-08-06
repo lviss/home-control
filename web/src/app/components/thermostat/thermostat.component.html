@@ -28,6 +28,12 @@
   </button>
   <button 
     mat-button 
+    (click)="mode('fan')" 
+    [color]="state.mode == 'fan' ? 'accent' : ''">
+    FAN
+  </button>
+  <button 
+    mat-button 
     (click)="mode('off')" 
     [color]="state.mode == 'off' ? 'accent' : ''">
     OFF
