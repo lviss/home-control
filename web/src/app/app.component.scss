@@ -1,3 +1,5 @@
+@import "../variables.scss";
+
 .toolbar-spacer {
   /* This fills the remaining space, by using flexbox. 
      Every toolbar row uses a flexbox row layout. */
@@ -15,16 +17,18 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-y:auto;
-  overflow-x:hidden;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: -120px;
+  z-index: 20;
 }
 html, body, app-root, .app-frame {
-	overflow: hidden;
 	margin: 0;
-	height: 100%;
 	box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  background-color: #505050;
 }
 /* garage css */
 .garage-doors {
@@ -49,7 +53,31 @@ app-garage-door:last-child {
 .label, app-zwave-dimmer {
   flex: 1;
 }
-/* tv css */
 app-tv {
   margin: 1em;
+}
+.desktop-title {
+  text-align: center;
+  padding-top: 60px;
+}
+
+@media only screen and (min-width: 799px) {
+  .mat-toolbar.mat-primary {
+    position: static;
+    height: 180px;
+  }
+  .menu-icon, .mobile-title {
+    display: none;
+  }
+}
+@media only screen and (max-width: 800px) {
+  .mat-toolbar.mat-primary {
+    z-index: 30;
+  }
+  .page-container {
+    margin-top: 0;
+  }
+  .desktop-title {
+    display: none;
+  }
 }

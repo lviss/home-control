@@ -22,6 +22,7 @@ var inbound_topics = [
   'devices/garage_door_sensor1',
   'devices/garage_door_sensor2',
   'devices/thermostat1/get',
+  'devices/thermostat2/get',
   'devices/master_bedroom_fan/stat/POWER',
   'devices/family_room_fan/stat/POWER',
   'devices/garage_light/stat/POWER',
@@ -60,6 +61,9 @@ var outbound_topics = [
   'devices/thermostat1/mode/set',
   'devices/thermostat1/desired_temperature/inc',
   'devices/thermostat1/desired_temperature/dec',
+  'devices/thermostat2/mode/set',
+  'devices/thermostat2/desired_temperature/inc',
+  'devices/thermostat2/desired_temperature/dec',
 ];
 
 // require sockets to authenticate
@@ -160,10 +164,13 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
   }
 });
 
-app.use('/auth/refresh', function(req, res) {
+app.use('/auth/refresh', function(req, res, next) {
   // get refresh token
-  jwt.verify(req.cookies.refresh, opts.secretOrKey, function(err, decoded) {
-    if (err) return res.next('bad token');
+  jwt.verify(req.cookies['refresh'], opts.secretOrKey, function(err, decoded) {
+    if (err) {
+      console.log(err);
+      return next('bad token');
+    }
     assignTokens(decoded.user, res);
     res.json({ result: 'success' });
   });
@@ -182,12 +189,12 @@ console.log('listening.');
 
 function assignTokens(user, res) {
   var token_validity = 60 * 60; // one hour in seconds
-  var token = jwt.sign({ user: { name: user.displayName, id: user.id, photos: user.photos }}, opts.secretOrKey, {
+  var token = jwt.sign({ user: { name: user.displayName || user.name, id: user.id, photos: user.photos }}, opts.secretOrKey, {
     expiresIn: token_validity // in seconds
   });
   res.cookie('jwt', token, { maxAge: token_validity * 1000, httpOnly: true, secure: true }); // maxAge in milliseconds
   var refresh_token_validity = 60 * 60 * 24 * 90; // 90 days in seconds
-  var refresh_token = jwt.sign({ user: { name: user.displayName, id: user.id, photos: user.photos }, type: "refresh"}, opts.secretOrKey, {
+  var refresh_token = jwt.sign({ user: { name: user.displayName || user.name, id: user.id, photos: user.photos }, type: "refresh"}, opts.secretOrKey, {
     expiresIn: refresh_token_validity // in seconds
   });
   res.cookie('refresh', refresh_token, { maxAge: refresh_token_validity * 1000, httpOnly: true, secure: true }); // maxAge in milliseconds

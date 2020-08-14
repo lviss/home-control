@@ -1,10 +1,11 @@
-<div class="mat-typography app-frame mat-app-background">
+<div class="mat-typography app-frame">
   <mat-toolbar color="primary" class="main-toolbar mat-elevation-z6">
     <mat-icon class="menu-icon">home</mat-icon>
-    <span class="title">Lane's House</span>
+    <span class="mobile-title">Lane's House</span>
     <span class="toolbar-spacer"></span>
   </mat-toolbar>
-  <div class="page-container">
+  <div class="page-container mat-elevation-z8 mat-app-background">
+    <h1 class="desktop-title mat-display-2">Lane's House</h1>
     <div class="garage-doors">
       <app-garage-door 
         sensorName="garage_door_sensor2" 
@@ -15,6 +16,10 @@
         openerName="garage_door_opener1">
       </app-garage-door>
     </div>
+    <mat-divider></mat-divider>
+    <app-thermostat deviceName="thermostat1"></app-thermostat>
+    <mat-divider></mat-divider>
+    <app-thermostat deviceName="thermostat2"></app-thermostat>
     <mat-divider></mat-divider>
     <mat-list>
       <h3 matSubheader>Lights</h3>
@@ -75,7 +80,5 @@
     </mat-list>
     <mat-divider></mat-divider>
     <app-tv deviceName="tv_receiver"></app-tv>
-    <mat-divider></mat-divider>
-    <app-thermostat deviceName="thermostat1"></app-thermostat>
   </div>
 </div>
