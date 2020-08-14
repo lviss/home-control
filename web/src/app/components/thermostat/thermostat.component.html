@@ -1,12 +1,12 @@
-<ng-container *ngIf="(state$ | async) as state">
+<div class="temperatures">
   <div 
     class="desired-temperature" 
-    [ngClass]="{heating: state.relays.heat, cooling: state.relays.cool}">
-    {{ state.desired_temperature }}
+    [ngClass]="{heating: state?.relays?.heat, cooling: state?.relays?.cool}">
+    {{ state?.desired_temperature }}
   </div>
   <div 
     class="actual-temperature">
-    {{ state.actual_temperature }}
+    {{ state?.actual_temperature }}
   </div>
   <button mat-icon-button (click)="inc()">
     <mat-icon>keyboard_arrow_up</mat-icon>
@@ -14,28 +14,30 @@
   <button mat-icon-button (click)="dec()">
     <mat-icon>keyboard_arrow_down</mat-icon>
   </button>
+</div>
+<div class="modes">
   <button 
     mat-button 
     (click)="mode('heat')" 
-    [color]="state.mode == 'heat' ? 'warn' : ''">
+    [color]="state?.mode == 'heat' ? 'warn' : ''">
     HEAT
   </button>
   <button 
     mat-button 
     (click)="mode('cool')" 
-    [color]="state.mode == 'cool' ? 'accent' : ''">
+    [color]="state?.mode == 'cool' ? 'accent' : ''">
     COOL
   </button>
   <button 
     mat-button 
     (click)="mode('fan')" 
-    [color]="state.mode == 'fan' ? 'accent' : ''">
+    [color]="state?.mode == 'fan' ? 'accent' : ''">
     FAN
   </button>
   <button 
     mat-button 
     (click)="mode('off')" 
-    [color]="state.mode == 'off' ? 'accent' : ''">
+    [color]="state?.mode == 'off' ? 'accent' : ''">
     OFF
   </button>
-</ng-container>
+</div>

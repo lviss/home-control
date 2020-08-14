@@ -1,8 +1,15 @@
 @import "../../../variables.scss";
 :host {
+  display: flex;
+  flex-direction: row;
+}
+.modes {
+  display: flex;
+  flex-direction: column;
   text-align: center;
-  padding-top: 1em;
-  padding-bottom: 1em;
+}
+.temperatures {
+  text-align: center;
 }
 .desired-temperature {
   font-size: 96px;

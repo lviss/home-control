@@ -56,6 +56,15 @@ app-garage-door:last-child {
 app-tv {
   margin: 1em;
 }
+.thermostats {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+.thermostats h3 {
+  display: block;
+  text-align: center;
+}
 .desktop-title {
   text-align: center;
   padding-top: 60px;

@@ -16,11 +16,16 @@
         openerName="garage_door_opener1">
       </app-garage-door>
     </div>
-    <mat-divider></mat-divider>
-    <app-thermostat deviceName="thermostat1"></app-thermostat>
-    <mat-divider></mat-divider>
-    <app-thermostat deviceName="thermostat2"></app-thermostat>
-    <mat-divider></mat-divider>
+    <div class="thermostats">
+      <div>
+        <h3 matSubheader>Upstairs</h3>
+        <app-thermostat deviceName="thermostat1"></app-thermostat>
+      </div>
+      <div>
+        <h3 matSubheader>Downstairs</h3>
+        <app-thermostat deviceName="thermostat2"></app-thermostat>
+      </div>
+    </div>
     <mat-list>
       <h3 matSubheader>Lights</h3>
       <mat-list-item>

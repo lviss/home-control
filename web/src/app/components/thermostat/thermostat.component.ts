@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { map } from 'rxjs/operators';
 
@@ -7,17 +7,19 @@ import { map } from 'rxjs/operators';
   templateUrl: './thermostat.component.html',
   styleUrls: ['./thermostat.component.scss']
 })
-export class ThermostatComponent implements OnInit {
+export class ThermostatComponent implements OnInit, OnDestroy {
 
   @Input() deviceName: string;
   deviceTopic: string;
-  state$;
+  state;
+  subscription;
   constructor(private socket: Socket) { }
 
   ngOnInit() {
     this.deviceTopic = 'devices/' + this.deviceName;
-    this.state$ = this.socket.fromEvent(this.deviceTopic + '/get')
-      .pipe(map( (data:string) => JSON.parse(data) ));
+    this.subscription = this.socket.fromEvent(this.deviceTopic + '/get')
+      .pipe(map( (data:string) => JSON.parse(data) ))
+      .subscribe(data => this.state = data);
   }
 
   dec() {
@@ -28,5 +30,9 @@ export class ThermostatComponent implements OnInit {
   }
   mode(mode) {
     this.socket.emit(this.deviceTopic + '/mode/set', mode); 
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }
