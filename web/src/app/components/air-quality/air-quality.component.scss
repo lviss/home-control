@@ -1,0 +1,17 @@
+@import "../../../variables.scss";
+mat-toolbar {
+  display: flex;
+  justify-content: space-around;
+}
+.good {
+  color: $accent;
+}
+.moderate {
+  color: yellow;
+}
+.unhealthy-sensitive {
+  color: $warn;
+}
+.unhealthy {
+  color: $primary;
+}

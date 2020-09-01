@@ -43,6 +43,7 @@ import { TasmotaSwitchComponent } from './components/tasmota-switch/tasmota-swit
 import { GarageDoorComponent } from './components/garage-door/garage-door.component';
 import { TvComponent } from './components/tv/tv.component';
 import { ThermostatComponent } from './components/thermostat/thermostat.component';
+import { AirQualityComponent } from './components/air-quality/air-quality.component';
 const config: SocketIoConfig = { url: environment.socketUrl, options: {} };
 
 @NgModule({
@@ -52,7 +53,8 @@ const config: SocketIoConfig = { url: environment.socketUrl, options: {} };
     TasmotaSwitchComponent,
     GarageDoorComponent,
     TvComponent,
-    ThermostatComponent
+    ThermostatComponent,
+    AirQualityComponent
   ],
   imports: [
     BrowserModule,
