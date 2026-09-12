@@ -14,7 +14,7 @@ describe('TasmotaAirQualityComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TasmotaensorComponent);
+    fixture = TestBed.createComponent(TasmotaAirQualityComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
