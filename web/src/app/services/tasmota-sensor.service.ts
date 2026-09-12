@@ -12,7 +12,7 @@ export class TasmotaSensorService {
   }
 
   fromDevice(deviceName) {
-    let topic = 'devices/' + deviceName + '/tele/SENSOR';
+    const topic = 'devices/' + deviceName + '/tele/SENSOR';
     return this.socket.fromEvent(topic);
   }
 }

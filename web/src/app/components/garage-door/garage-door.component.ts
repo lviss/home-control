@@ -22,20 +22,21 @@ export class GarageDoorComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    let topic = 'devices/' + this.sensorName;
+    const topic = 'devices/' + this.sensorName;
     this.state$ = this.socket.fromEvent(topic)
-      .pipe(map( (data:string) => JSON.parse(data) ));
+      .pipe(map( (data: string) => JSON.parse(data) ));
     this.connected$ = this.socketCache.fromEvent('devices/' + this.openerName + '/clientstatus')
-      .pipe(map((data:string) => data != 'lost connection'));
+      .pipe(map((data: string) => data !== 'lost connection'));
   }
 
   toggleGarage(event) {
-    this.socket.emit('devices/' + this.openerName + '/command', {"action":"push_button"}); 
+    this.socket.emit('devices/' + this.openerName + '/command', {action: 'push_button'});
   }
 
   garageLabel(state) {
-    if (!state)
+    if (!state) {
       return 'unknown';
+    }
     return state.open ? 'open' : 'closed';
   }
 }
