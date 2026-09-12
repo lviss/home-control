@@ -8,8 +8,6 @@ The app is made up of these parts:
   * how users interact with the system
   * Google Oauth authentication
   * socketio web interface
-* notify_me
-  * an app for alerting me of things that happen
 * onkyo_control
   * an app for interfacing with an onkyo tv receiver
 * scheduler
@@ -30,7 +28,6 @@ All the components can easily be brought up together using docker-compose:
 
     // update /config.js (google_auth.clientID, allowed_user_ids)
     // export GOOGLE_CLIENT_SECRET and JWT_SECRET in the environment
-    // update /notify_me/config.js
     // update /onkyo_control/config.js
     // update /scheduler/config.js
     // update /hold_press_handler/config.js
