@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { AirQualityService } from '../../services/air-quality.service';
-import aqi from 'aqi-us';
-import {interval} from "rxjs/internal/observable/interval";
-import {startWith, switchMap} from "rxjs/operators";
+//import { AirQualityService } from '../../services/air-quality.service';
+//import aqi from 'aqi-us';
+//import {interval} from "rxjs/internal/observable/interval";
+//import {startWith, switchMap} from "rxjs/operators";
 
 @Component({
   selector: 'app-air-quality',
@@ -11,16 +11,16 @@ import {startWith, switchMap} from "rxjs/operators";
 })
 export class AirQualityComponent implements OnInit {
 
-  airQuality;
+/*  airQuality;
   aqi;
   category;
-
+*/
   constructor(
-    private airQualityService: AirQualityService
+//    private airQualityService: AirQualityService
   ) { }
 
   ngOnInit() {
-    interval(1000 * 60 * 10).pipe( // every 10 mins
+/*    interval(1000 * 60 * 10).pipe( // every 10 mins
       startWith(0),
       switchMap(() => this.airQualityService.get())
     ).subscribe((res : any) => {
@@ -35,6 +35,6 @@ export class AirQualityComponent implements OnInit {
       else 
         this.category = 'unhealthy';
     });
-  }
+*/  }
 
 }

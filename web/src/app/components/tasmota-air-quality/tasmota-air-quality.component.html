@@ -1,0 +1,6 @@
+<ng-container *ngIf="(state$ | async) as state">
+  <span [class]="qualityCategory(objectify(state).VINDRIKTNING['PM2.5'])">
+    {{ objectify(state).VINDRIKTNING['PM2.5'] }}
+  </span>
+  <small>({{ dateAgo(objectify(state).Time) }})</small>
+</ng-container>

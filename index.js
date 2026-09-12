@@ -21,23 +21,32 @@ var mqtt = require('mqtt');
 var inbound_topics = [
   'devices/garage_door_sensor1',
   'devices/garage_door_sensor2',
+  'devices/garage_door_opener1/clientstatus',
+  'devices/garage_door_opener2/clientstatus',
   'devices/thermostat1/get',
   'devices/thermostat2/get',
   'devices/master_bedroom_fan/stat/POWER',
   'devices/family_room_fan/stat/POWER',
-  'devices/garage_light/stat/POWER',
   'devices/driveway_lights/stat/POWER',
   'devices/christmas_lights/stat/POWER',
   'devices/christmas_tree/stat/POWER',
+  'devices/heatdish/stat/POWER',
   'devices/tv_receiver/power',
   'devices/tv_receiver/volume',
   'devices/tv_receiver/input',
   'devices/kitchen/lights4/level',
   'devices/kitchen/lights3/level',
+  'devices/garage/garage_lights/level',
   'devices/family_room/fanlight/level',
   'devices/family_room/can_lights/level',
   'devices/master_bedroom/light/level',
-  'devices/upstairs_hallway/lights/level'
+  'devices/master_bedroom/bed/automation',
+  'devices/family_room/fanlight_automation',
+  'devices/office/light/level',
+  'devices/indoor_air_quality/tele/SENSOR',
+  'devices/outdoor_air_quality/tele/SENSOR',
+  'devices/upstairs_hallway/lights/level',
+  'boat/battery/voltage'
 ];
  
 var outbound_topics = [
@@ -47,12 +56,16 @@ var outbound_topics = [
   'devices/family_room/fanlight/level/set',
   'devices/family_room/can_lights/level/set',
   'devices/master_bedroom/light/level/set',
+  'devices/master_bedroom/bed/automation',
+  'devices/family_room/fanlight_automation',
+  'devices/office/light/level/set',
+  'devices/garage/garage_lights/level/set',
   'devices/driveway_lights/cmnd/Power1',
   'devices/christmas_lights/cmnd/Power1',
   'devices/christmas_tree/cmnd/Power1',
+  'devices/heatdish/cmnd/Power1',
   'devices/master_bedroom_fan/cmnd/Power1',
   'devices/family_room_fan/cmnd/Power1',
-  'devices/garage_light/cmnd/Power1',
   'devices/garage_door_opener1/command',
   'devices/garage_door_opener2/command',
   'devices/tv_receiver/command/power',
@@ -82,20 +95,20 @@ io.use((socket, next) => {
   });
 });
 
-// TODO: close mqttclient when io disconnects, or have all
-// io connections share an mqttclient.
 io.on('connection', function(socket) { 
   // make a mqttclient for this socket
   var mqttclient = mqtt.connect(config.mqtt_server);
+
+  mqttclient.on('message', function (topic, message) {
+    //console.log('io emitting:', topic, message.toString());
+    io.emit(topic, message.toString());
+  });
+
   mqttclient.on('connect', function () {
     // subscribe to all the devices that we want to show information about
     for (let i = 0; i < inbound_topics.length; i++)
       mqttclient.subscribe(inbound_topics[i]);
   })
-
-  mqttclient.on('message', function (topic, message) {
-    io.emit(topic, message.toString());
-  });
 
   // for devices that we aren't keeping track of their state, send a message
   // to the device via MQTT asking for their current state.
@@ -105,11 +118,10 @@ io.on('connection', function(socket) {
   // publishing with no payload means query for the following devices
   mqttclient.publish('devices/master_bedroom_fan/cmnd/POWER'); 
   mqttclient.publish('devices/family_room_fan/cmnd/POWER');
-  mqttclient.publish('devices/garage_light/cmnd/POWER');
   mqttclient.publish('devices/driveway_lights/cmnd/POWER');
   mqttclient.publish('devices/christmas_lights/cmnd/POWER');
   mqttclient.publish('devices/christmas_tree/cmnd/POWER');
-
+  mqttclient.publish('devices/heatdish/cmnd/POWER');
 
   // maybe we want to do something with the user object like pass it to the
   // garage door?
@@ -121,8 +133,19 @@ io.on('connection', function(socket) {
         data.user = user;
         data = JSON.stringify(data);
       }
-      mqttclient.publish(outbound_topics[i], data + "");
+      if ([
+        'devices/family_room/fanlight_automation',
+        'devices/master_bedroom/bed/automation'
+      ].indexOf(outbound_topics[i]) != -1)
+        mqttclient.publish(outbound_topics[i], data + "", { retain: true });
+      else
+        mqttclient.publish(outbound_topics[i], data + "");
     });
+
+  // close mqttclient when io disconnects
+  socket.on('disconnect', reason => {
+    mqttclient.end();
+  });
 });
 
 // set up our authentication methods (google and jwt).
@@ -158,9 +181,13 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
   } else {
     // not in our allowed list
     res.status(402).send('unauthorized.');
+    var mqttclient = mqtt.connect(config.mqtt_server);
+    console.log('unauthorized login from', req.user);
     mqttclient.publish('notify/me', JSON.stringify({
       message: 'unauthorized access from: ' + JSON.stringify(req.user)
-    }));
+    }), function(err) {
+      mqttclient.end();
+    });
   }
 });
 

@@ -12,12 +12,23 @@ services:
       - VIRTUAL_HOST=example.com # set this to the hostname that clients will type into their browsers
       - LETSENCRYPT_HOST=example.com # set this to the hostname that clients will type into their browsers
       - LETSENCRYPT_EMAIL=someone@somewhere.com # set this to the email address that letsencrypt can send expiration warnings to
-  notify-me:
-    build: ./notify_me
-    networks:
-      - back
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET} # OAuth client secret from Google's Developer Console
+      - JWT_SECRET=${JWT_SECRET} # random string used to sign JWT tokens
+# notify-me is currently unused (replaced by a different notification mechanism), commented out.
+#  notify-me:
+#    build: ./notify_me
+#    networks:
+#      - back
   onkyo-control:
     build: ./onkyo_control
+    networks:
+      - back
+  scheduler:
+    build: ./scheduler
+    networks:
+      - back
+  hold-press-handler:
+    build: ./hold_press_handler
     networks:
       - back
 
