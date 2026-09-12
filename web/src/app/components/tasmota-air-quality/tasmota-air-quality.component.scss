@@ -1,14 +1,4 @@
 @import "../../../variables.scss";
-mat-toolbar {
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-
-  div {
-    flex: 0 0 auto;
-    margin-right: 2em;
-  }
-}
 .good {
   color: $accent;
 }

@@ -1,7 +1,7 @@
 {
-  "name": "onkyo_control",
+  "name": "hold_press_handler",
   "version": "1.0.0",
-  "description": "",
+  "description": "handle mqtt messages for sonoff devices when the button is held down",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mqtt": "^2.18.8",
-    "eiscp": "^0.2.0"
+    "mqtt": "^2.18.8"
   }
 }
