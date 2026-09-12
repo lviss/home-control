@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
 import { SwUpdate } from '@angular/service-worker';
 import { interval } from 'rxjs';
+import { SocketCacheService } from './services/socket-cache.service';
 
 @Component({
   selector: 'app-root',
@@ -16,11 +17,12 @@ export class AppComponent {
   opened = false;
 
   constructor(
-    private socket: Socket, 
+    private socket: Socket,
     private snackbar: MatSnackBar,
     private swUpdate: SwUpdate,
-    private http: HttpClient
-  ) { 
+    private http: HttpClient,
+    private socketCache: SocketCacheService,
+  ) {
     // check for service worker updates
     if (swUpdate.isEnabled) {
       interval(60 * 60 * 1000).subscribe(() => swUpdate.checkForUpdate()

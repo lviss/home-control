@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { map } from 'rxjs/operators';
+import { SocketCacheService } from '../../services/socket-cache.service';
 
 @Component({
   selector: 'app-garage-door',
@@ -13,16 +14,22 @@ export class GarageDoorComponent implements OnInit {
   @Input() sensorName: string;
 
   state$;
+  connected$;
 
-  constructor(private socket: Socket) { }
+  constructor(
+    private socket: Socket,
+    private socketCache: SocketCacheService
+  ) { }
 
   ngOnInit() {
     let topic = 'devices/' + this.sensorName;
-    this.state$ = this.socket.fromEvent(topic).pipe(map( (data:string) => JSON.parse(data) ));
+    this.state$ = this.socket.fromEvent(topic)
+      .pipe(map( (data:string) => JSON.parse(data) ));
+    this.connected$ = this.socketCache.fromEvent('devices/' + this.openerName + '/clientstatus')
+      .pipe(map((data:string) => data != 'lost connection'));
   }
 
   toggleGarage(event) {
-    console.log('devices/' + this.openerName + '/command'); 
     this.socket.emit('devices/' + this.openerName + '/command', {"action":"push_button"}); 
   }
 

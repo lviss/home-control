@@ -27,3 +27,12 @@
 	background-color:inherit;
 }
 .garage_door_icon:active:hover { background-color: #666; }
+.offline {
+  margin-left: 10px;
+  animation: blinker 1s linear infinite;
+}
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}

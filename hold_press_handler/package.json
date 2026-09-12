@@ -1,0 +1,15 @@
+{
+  "name": "hold_press_handler",
+  "version": "1.0.0",
+  "description": "handle mqtt messages for sonoff devices when the button is held down",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mqtt": "^2.18.8"
+  }
+}
