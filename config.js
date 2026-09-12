@@ -6,16 +6,20 @@ module.exports = {
   // the address of the mqtt server
   "mqtt_server": 'mqtt://192.168.1.100',
   // were going to use google's OAuth api for authentication.
-  // clientID, clientSecret you get from Google's Developer Console 
+  // clientID, clientSecret you get from Google's Developer Console
   // (https://console.developers.google.com/), and callbackURL is the url that google
   // will redirect users to after they have authenticated. (ex. https://example.com/auth/google/callback)
+  // clientSecret is loaded from the GOOGLE_CLIENT_SECRET environment variable rather than
+  // hardcoded here. In production, NixOS populates that env var from an agenix-managed
+  // secret (see the laneos repo) - this repo only needs to read it from the environment.
   "google_auth": {
     "clientID": "1234123412341234.apps.googleusercontent.com",
-    "clientSecret": "abcdabcdabcdabcd",
+    "clientSecret": process.env.GOOGLE_CLIENT_SECRET || "<set via GOOGLE_CLIENT_SECRET env var>",
     "callbackURL": "https://example.com/auth/google/callback"
   },
-  // generate a random string for this, it'll be used to sign the JWT tokens.
-  "jwt_secret": "put some _RANDOM_ data here",
+  // used to sign the JWT tokens. Loaded from the JWT_SECRET environment variable rather
+  // than hardcoded here - see the note on clientSecret above.
+  "jwt_secret": process.env.JWT_SECRET || "<set via JWT_SECRET env var>",
   // each string in this array maps to a user's ID (assigned by google) that is allowed
   // to log in to this site. If a user tries to log in that doesn't appear in this array,
   // an email is generated and sent to the administrator. That email contains the ID that
