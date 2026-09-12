@@ -43,7 +43,7 @@ export class AppComponent {
 
   private promptUpdate(): void {
     console.log('updating to new version');
-    let snack = this.snackbar.open('A new version is available!', 'Update', { duration: undefined });
+    const snack = this.snackbar.open('A new version is available!', 'Update', { duration: undefined });
     snack.onAction().subscribe(() => {
       this.swUpdate.activateUpdate().then(() => document.location.reload());
     });

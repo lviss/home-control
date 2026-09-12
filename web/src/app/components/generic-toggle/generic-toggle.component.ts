@@ -19,11 +19,11 @@ export class GenericToggleComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.state$ = this.socketCache.fromEvent(this.topic)
-    //this.state$ = this.socket.fromEvent(this.topic);
+    this.state$ = this.socketCache.fromEvent(this.topic);
+    // this.state$ = this.socket.fromEvent(this.topic);
   }
 
   onChange(event) {
-    this.socket.emit(this.topic, event.checked ? "1" : "0");
+    this.socket.emit(this.topic, event.checked ? '1' : '0');
   }
 }

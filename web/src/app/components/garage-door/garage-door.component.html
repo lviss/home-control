@@ -4,6 +4,6 @@
     class="garage_door_icon" 
     [ngClass]="{'open': state?.open }">
       {{ garageLabel(state) }}
-      <mat-icon class="offline" *ngIf="(connected$ | async) == false">offline_bolt</mat-icon>
+      <mat-icon class="offline" *ngIf="(connected$ | async) === false">offline_bolt</mat-icon>
   </div>
 </ng-container>
