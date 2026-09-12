@@ -24,6 +24,6 @@ export class GenericToggleComponent implements OnInit {
   }
 
   onChange(event) {
-    this.socket.emit(this.topic, event.checked ? "1" : "0"); 
+    this.socket.emit(this.topic, event.checked ? "1" : "0");
   }
 }

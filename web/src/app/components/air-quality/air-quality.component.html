@@ -1,14 +1,10 @@
-<!--<mat-toolbar *ngIf="airQuality" class="air-quality">-->
 <mat-toolbar class="air-quality">
-  <!--<div>Outside: {{ (airQuality?.results[0].temp_f - 32) * 5/9 | number:'1.0-0' }}&deg;</div>-->
-  <!--<div>Humidity: {{ airQuality?.results[0].humidity }}</div>-->
-  <!--<div>AQI: <span [class]="category">{{ aqi }}</span></div>-->
   <div>
-    Indoor: 
+    Indoor:
     <app-tasmota-air-quality deviceName="indoor_air_quality"></app-tasmota-air-quality>
   </div>
   <div>
-    Outdoor: 
+    Outdoor:
     <app-tasmota-air-quality deviceName="outdoor_air_quality"></app-tasmota-air-quality>
   </div>
 </mat-toolbar>

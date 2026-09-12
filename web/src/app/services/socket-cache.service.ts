@@ -22,7 +22,7 @@ export class SocketCacheService {
     // listen to all endpoints and put all messages in the cache
     this.endpointsToCache.forEach(endpoint => {
       this.cache[endpoint] = new ReplaySubject(1);
-      this.socket.fromEvent(endpoint).subscribe(data => { 
+      this.socket.fromEvent(endpoint).subscribe(data => {
         this.cache[endpoint].next(data);
       });
     });

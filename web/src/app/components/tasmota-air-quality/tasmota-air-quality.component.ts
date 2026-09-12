@@ -65,7 +65,7 @@ export class TasmotaAirQualityComponent implements OnInit {
       return 'moderate';
     else if (value < 150)
       return 'unhealthy-sensitive';
-    else 
+    else
       return 'unhealthy';
   }
 }
